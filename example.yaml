@@ -1,0 +1,9 @@
+lanes:
+  1:
+    range: 1-2
+    barcodes: my_main_barcodes
+    
+barcodes:
+  my_main_barcodes:
+    1: GATACA
+    2: CATCAT
