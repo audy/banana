@@ -65,10 +65,17 @@ for lane in config['lanes']:
     for experiment in config['lanes'][lane]:
         # Load BARCODES
         barcode_type = config['lanes'][lane][experiment]['barcodes']
-        start, stop = config['lanes'][lane][experiment]['range'].split('-')
-        start, stop = int(start), int(stop) + 1
-        barcode_range = range(start, stop)
-        print '\t%s (%s, %s-%s)' % (experiment, barcode_type, start, stop), 
+        barcode_range = config['lanes'][lane][experiment]['range']
+        
+        # check if range or individual barcodes specified
+        if '-' in barcode_range:
+            start, stop = config['lanes'][lane][experiment]['range'].split('-')
+            start, stop = int(start), int(stop) + 1
+            barcode_range = range(start, stop)
+            print '\t%s (%s, %s-%s)' % (experiment, barcode_type, start, stop), 
+        else:
+            barcode_range = barcode_range.split()
+            print '\t%s (%s, %s)' % (experiment, barcode_type, ','.join(barcode_range))
 
         to_keep = dict( (v, k) for k, v in config['barcodes'][barcode_type].items() if k in barcode_range )
 
@@ -83,6 +90,7 @@ for lane in config['lanes']:
                 'number': '%04d' % file_no })
             
             with open(filename) as handle:
+                print filename
                 for n, line in enumerate(handle):
                     barcode = line.split('\t')[8][::-1].translate(COMPLEMENT) 
                     if barcode in to_keep.keys():
@@ -90,6 +98,7 @@ for lane in config['lanes']:
                         kept += 1
                     else:
                         thrown_away += 1
+            print len(line_to_barcode)
 
             # Output reads.
             for mate in [1, 3]:
